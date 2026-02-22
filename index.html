@@ -2,129 +2,214 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Game Sandi Morse - The Master</title>
+<title>THE MASTER SANDI GAMES</title>
 <style>
 body{
-    font-family: Arial, sans-serif;
+    font-family: monospace;
+    background-color:#000;
+    color:#fff;
     text-align:center;
-    background: linear-gradient(to right,#ffb6e6,#ffcce6);
-    margin:0;
     padding:20px;
 }
 h1{
-    color:#b30086;
+    color:#00ff00;
 }
-.card{
-    background:white;
-    padding:20px;
-    border-radius:15px;
-    box-shadow:0 5px 15px rgba(0,0,0,0.2);
-    max-width:400px;
-    margin:auto;
+#soal span{
+    font-size:24px;
+    margin:2px;
+    padding:5px 10px;
+    border-radius:5px;
+    display:inline-block;
 }
-button{
-    padding:10px 20px;
-    border:none;
-    border-radius:10px;
-    background:#ff66b3;
-    color:white;
-    font-weight:bold;
-    cursor:pointer;
-    margin:5px;
+.correct{
+    background-color:green;
 }
-button:hover{
-    background:#e60073;
+.wrong{
+    background-color:red;
 }
 input{
     padding:10px;
-    width:80%;
-    border-radius:8px;
-    border:1px solid #ccc;
+    width:60%;
+    font-size:16px;
     margin-top:10px;
 }
-.hidden{
-    display:none;
+button{
+    padding:10px 20px;
+    margin-top:10px;
+    font-size:16px;
+    cursor:pointer;
 }
 </style>
 </head>
-
 <body>
 
-<h1>🎯 Game Sandi Morse</h1>
-<p>By The Master Gudep</p>
+<h1>THE MASTER SANDI GAMES</h1>
+<p id="desc">Tebak sandi Morse berikut ini!</p>
 
-<div class="card" id="menu">
-    <h3>Pilih Level</h3>
-    <button onclick="mulaiGame(1)">Level 1 (Mudah)</button>
-    <button onclick="mulaiGame(2)">Level 2 (Sulit)</button>
-</div>
-
-<div class="card hidden" id="game">
+<div id="game">
     <p>⏳ Waktu: <span id="waktu">60</span> detik</p>
     <p>⭐ Skor: <span id="skor">0</span></p>
-    <h2 id="soal">...</h2>
+    <div id="soal"></div>
     <input type="text" id="jawaban" placeholder="Masukkan jawaban">
     <br>
     <button onclick="cekJawaban()">Jawab</button>
 </div>
 
 <script>
+// Level 1 semua kata
+const level1=[
+{word:"Dream", morse:"-.. .-. . .- --"},
+{word:"Ocean", morse:"--- -.-. . .- -."},
+{word:"Whisper", morse:".-- .... .. ... .--. . .-."},
+{word:"Galaxy", morse:"--. .- .-.. .- -..- -.--"},
+{word:"Courage", morse:"-.-. --- ..- .-. .- --. ."},
+{word:"Blossom", morse:"-... .-.. --- ... ... --- --"},
+{word:"Mirror", morse:"-- .. .-. .-. --- .-."},
+{word:"Thunder", morse:"- .... ..- -. -.. . .-."},
+{word:"Velvet", morse:"...- . .-.. ...- . -"},
+{word:"Horizon", morse:".... --- .-. .. --.. --- -."},
+{word:"Sparkle", morse:"... .--. .- .-. -.- .-.. ."},
+{word:"Shadow", morse:"... .... .- -.. --- .--"},
+{word:"Journey", morse:".--- --- ..- .-. -. . -.--"},
+{word:"Secret", morse:"... . -.-. .-. . -"},
+{word:"Sunrise", morse:"... ..- -. .-. .. ... ."},
+{word:"Lantern", morse:".-.. .- -. - . .-. -."},
+{word:"Crystal", morse:"-.-. .-. -.-- ... - .- .-.."},
+{word:"Meadow", morse:"-- .- -.. . .- -.. --- .--"},
+{word:"Storm", morse:"... - --- .-. --"},
+{word:"Puzzle", morse:".--. ..- --.. --.. .-.. ."},
+{word:"Magic", morse:"-- .- --. .. -.-."},
+{word:"Silver", morse:"... .. .-.. ...- . .-."},
+{word:"Golden", morse:"--. --- .-.. -.. . -."},
+{word:"Butterfly", morse:"-... ..- - - . .-. ..-. .-.. -.--"},
+{word:"Freedom", morse:"..-. .-. . . -.. --- --"},
+{word:"Langit", morse:".-.. .- -. --. .. -"},
+{word:"Senja", morse:"... . -. .--- .-"},
+{word:"Mentari", morse:"-- . -. - .- .-. .."},
+{word:"Pelangi", morse:".--. . .-.. .- -. --. .."},
+{word:"Ombak", morse:"--- -- -... .- -.-"},
+{word:"Awan", morse:".- .-- .- -."},
+{word:"Hujan", morse:".... ..- .--- .- -."},
+{word:"Bintang", morse:"-... .. -. - .- -. --."},
+{word:"Bulan", morse:"-... ..- .-.. .- -."},
+{word:"Angin", morse:".- -. --. .. -."},
+{word:"Cahaya", morse:"-.-. .- .... .- -.-- .-"},
+{word:"Bayangan", morse:"-... .- -.-- .- -. --. .- -. --."},
+{word:"Harapan", morse:".... .- .-. .- .--. .- -."},
+{word:"Cinta", morse:"-.-. .. -. - .-"},
+{word:"Sahabat", morse:"... .- .... .- -... .- -"},
+{word:"Kenangan", morse:"-.- . -. .- -. --. .- -. --."},
+{word:"Waktu", morse:".-- .- -.- - ..-"},
+{word:"Detik", morse:"-.. . - .. -.-"},
+{word:"Senyum", morse:"... . -. -.-- ..- --"},
+{word:"Tawa", morse:"- .- .-- .-"},
+{word:"Tangis", morse:"- .- -. --. .. ..."},
+{word:"Damai", morse:"-.. .- -- .- .."},
+{word:"Semangat", morse:"... . -- .- -. --. .- -"},
+{word:"Doa", morse:"-.. --- .-"},
+{word:"Ikhlas", morse:".. -.- .... .-.. .- ..."},
+{word:"Ridho", morse:".-. .. -.. .... ---"},
+{word:"Bahagia", morse:"-... .- .... .- --. .. .-"},
+{word:"Tenang", morse:"- . -. .- -. --."},
+{word:"Berani", morse:"-... . .-. .- -. .."},
+{word:"Setia", morse:"... . - .. .-"},
+{word:"Jujur", morse:".--- ..- .--- ..- .-."},
+{word:"Pintar", morse:".--. .. -. - .- .-."},
+{word:"Rajin", morse:".-. .- .--- .. -."},
+{word:"Disiplin", morse:"-.. .. ... .. .--. .-.. .. -."},
+{word:"Sabar", morse:"... .- -... .- .-."},
+{word:"Mandiri", morse:"-- .- -. -.. .. .-. .."},
+{word:"Kreatif", morse:"-.- .-. . .- - .. ..-."},
+{word:"Inspirasi", morse:".. -. ... .--. .. .-. .- ... .."},
+{word:"Prestasi", morse:".--. .-. . ... - .- ... .."},
+{word:"Buku", morse:"-... ..- -.- ..-"},
+{word:"Pena", morse:".--. . -. -."},
+{word:"Kertas", morse:"-.- . .-. - .- ..."},
+{word:"Tas", morse:"- .- ..."},
+{word:"Sepatu", morse:"... . .--. .- - ..-"},
+{word:"Meja", morse:"-- . .--- .-"},
+{word:"Kursi", morse:"-.- ..- .-. ... .."},
+{word:"Jendela", morse:".--- . -. -.. . .-.. .-"},
+{word:"Pintu", morse:".--. .. -. - ..-"},
+{word:"Cermin", morse:"-.-. . .-. -- .. -."},
+{word:"Bantal", morse:"-... .- -. - .- .-.."},
+{word:"Selimut", morse:"... . .-.. .. -- ..- -"},
+{word:"Bunga", morse:"-... ..- -. --. .-"},
+{word:"Mawar", morse:"-- .- .-- .- .-."},
+{word:"Melati", morse:"-- . .-.. .- - .."},
+{word:"Anggrek", morse:".- -. --. --. .-. . -.-"},
+{word:"Kupu-kupu", morse:"-.- ..- .--. ..- -.- ..- .--. ..-"},
+{word:"Burung", morse:"-... ..- .-. ..- -. --."},
+{word:"Ikan", morse:".. -.- .- -."},
+{word:"Kucing", morse:"-.-. ..- -.-. .. -. --."},
+{word:"Anjing", morse:".- -. .--- .. -. --."},
+{word:"Gunung", morse:"--. ..- -. ..- -. --."},
+{word:"Sungai", morse:"... ..- -. --. .- .."},
+{word:"Laut", morse:".-.. .- ..- -"},
+{word:"Pantai", morse:".--. .- -. - .- .."},
+{word:"Hutan", morse:".... ..- - .- -."},
+{word:"Kota", morse:"-.- --- - .-"},
+{word:"Desa", morse:"-.. . ... .-"},
+{word:"Sekolah", morse:"... . -.- --- .-.. .- ...."},
+{word:"Guru", morse:"--. ..- .-. ..-"},
+{word:"Siswa", morse:"... .. ... .-- .-"},
+{word:"Pemimpin", morse:".--. . -- .. .--. .. -. .-."},
+{word:"Pramuka", morse:".--. .-. .- -- ..- -.- .-"},
+{word:"Upacara", morse:"..- .--. .- -.-. .- .-. .-"},
+{word:"Bendera", morse:"-... . -. -.. . .-. .-"},
+{word:"Indonesia", morse:".. -. -.. --- -. . ... .. -"}
+];
+
 let skor=0;
 let waktu=60;
-let level=1;
-let timer;
 let current;
+let timer;
 
-const level1=[
-{soal:"... --- ...", jawab:"SOS"},
-{soal:".- -.- ..-", jawab:"AKU"},
-{soal:"-- --- .-. ... .", jawab:"MORSE"},
-{soal:".--. .-. .- -- ..- -.- .-", jawab:"PRAMUKA"}
-];
-
-const level2=[
-{soal:"- .... . -- .- ... - . .-.", jawab:"THEMASTER"},
-{soal:"--. .. ... . .-..", jawab:"GISEL"},
-{soal:".- -. --. --. --- - .-", jawab:"ANGGOTA"},
-{soal:"-.- . .--. .- .-.. .-", jawab:"KEPALA"}
-];
-
-function mulaiGame(lv){
-level=lv;
-document.getElementById("menu").classList.add("hidden");
-document.getElementById("game").classList.remove("hidden");
-skor=0;
-waktu=60;
-document.getElementById("skor").innerText=skor;
-document.getElementById("waktu").innerText=waktu;
-ambilSoal();
-
-timer=setInterval(function(){
-waktu--;
-document.getElementById("waktu").innerText=waktu;
-if(waktu<=0){
-clearInterval(timer);
-alert("Waktu habis! Skor kamu: "+skor);
-location.reload();
-}
-},1000);
+function acakLevel(){
+    return level1[Math.floor(Math.random()*level1.length)];
 }
 
-function ambilSoal(){
-let data=(level==1)?level1:level2;
-current=data[Math.floor(Math.random()*data.length)];
-document.getElementById("soal").innerText=current.soal;
+function tampilSoal(){
+    current = acakLevel();
+    const soalDiv = document.getElementById("soal");
+    soalDiv.innerHTML="";
+    current.morse.split(" ").forEach(l=>{
+        const span = document.createElement("span");
+        span.textContent = l;
+        soalDiv.appendChild(span);
+    });
+    document.getElementById("jawaban").value="";
 }
 
 function cekJawaban(){
-let input=document.getElementById("jawaban").value.toUpperCase();
-if(input===current.jawab){
-skor++;
-document.getElementById("skor").innerText=skor;
+    const input = document.getElementById("jawaban").value.trim().toUpperCase();
+    if(input === current.word.toUpperCase()){
+        skor++;
+        document.getElementById("skor").innerText=skor;
+        waktu +=3; // tambah 3 detik
+        document.getElementById("waktu").innerText=waktu;
+        document.querySelectorAll("#soal span").forEach(span=>span.classList.add("correct"));
+        setTimeout(tampilSoal,500);
+    }else{
+        document.querySelectorAll("#soal span").forEach(span=>span.classList.add("wrong"));
+        document.getElementById("jawaban").value="";
+    }
 }
-document.getElementById("jawaban").value="";
-ambilSoal();
+
+function startTimer(){
+    timer = setInterval(()=>{
+        waktu--;
+        document.getElementById("waktu").innerText=waktu;
+        if(waktu<=0){
+            clearInterval(timer);
+            alert("Waktu habis! Skor kamu: "+skor);
+            location.reload();
+        }
+    },1000);
 }
+
+tampilSoal();
+startTimer();
 </script>
 
 </body>
