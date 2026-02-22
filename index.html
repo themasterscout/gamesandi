@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Game Sandi Morse - The Master</title>
+<style>
+body{
+    font-family: Arial, sans-serif;
+    text-align:center;
+    background: linear-gradient(to right,#ffb6e6,#ffcce6);
+    margin:0;
+    padding:20px;
+}
+h1{
+    color:#b30086;
+}
+.card{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+    max-width:400px;
+    margin:auto;
+}
+button{
+    padding:10px 20px;
+    border:none;
+    border-radius:10px;
+    background:#ff66b3;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    margin:5px;
+}
+button:hover{
+    background:#e60073;
+}
+input{
+    padding:10px;
+    width:80%;
+    border-radius:8px;
+    border:1px solid #ccc;
+    margin-top:10px;
+}
+.hidden{
+    display:none;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎯 Game Sandi Morse</h1>
+<p>By The Master Gudep</p>
+
+<div class="card" id="menu">
+    <h3>Pilih Level</h3>
+    <button onclick="mulaiGame(1)">Level 1 (Mudah)</button>
+    <button onclick="mulaiGame(2)">Level 2 (Sulit)</button>
+</div>
+
+<div class="card hidden" id="game">
+    <p>⏳ Waktu: <span id="waktu">60</span> detik</p>
+    <p>⭐ Skor: <span id="skor">0</span></p>
+    <h2 id="soal">...</h2>
+    <input type="text" id="jawaban" placeholder="Masukkan jawaban">
+    <br>
+    <button onclick="cekJawaban()">Jawab</button>
+</div>
+
+<script>
+let skor=0;
+let waktu=60;
+let level=1;
+let timer;
+let current;
+
+const level1=[
+{soal:"... --- ...", jawab:"SOS"},
+{soal:".- -.- ..-", jawab:"AKU"},
+{soal:"-- --- .-. ... .", jawab:"MORSE"},
+{soal:".--. .-. .- -- ..- -.- .-", jawab:"PRAMUKA"}
+];
+
+const level2=[
+{soal:"- .... . -- .- ... - . .-.", jawab:"THEMASTER"},
+{soal:"--. .. ... . .-..", jawab:"GISEL"},
+{soal:".- -. --. --. --- - .-", jawab:"ANGGOTA"},
+{soal:"-.- . .--. .- .-.. .-", jawab:"KEPALA"}
+];
+
+function mulaiGame(lv){
+level=lv;
+document.getElementById("menu").classList.add("hidden");
+document.getElementById("game").classList.remove("hidden");
+skor=0;
+waktu=60;
+document.getElementById("skor").innerText=skor;
+document.getElementById("waktu").innerText=waktu;
+ambilSoal();
+
+timer=setInterval(function(){
+waktu--;
+document.getElementById("waktu").innerText=waktu;
+if(waktu<=0){
+clearInterval(timer);
+alert("Waktu habis! Skor kamu: "+skor);
+location.reload();
+}
+},1000);
+}
+
+function ambilSoal(){
+let data=(level==1)?level1:level2;
+current=data[Math.floor(Math.random()*data.length)];
+document.getElementById("soal").innerText=current.soal;
+}
+
+function cekJawaban(){
+let input=document.getElementById("jawaban").value.toUpperCase();
+if(input===current.jawab){
+skor++;
+document.getElementById("skor").innerText=skor;
+}
+document.getElementById("jawaban").value="";
+ambilSoal();
+}
+</script>
+
+</body>
+</html>
